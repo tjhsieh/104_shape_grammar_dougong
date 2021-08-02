@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <link href="../Content/Tools/bootstrap/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+
+        html,body,#canvas{
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            -ms-scroll-limit: 0 0 0 0;
+        }
+
+    </style>
+
+    <script src="../Scripts/Tools/JQuery/jquery-2.1.3.min.js"></script>
+    <script src="../Scripts/Tools/jquery.hotkeys.js"></script>
+
+    <!-- three.js -->
+    <script src="../Scripts/Tools/three.js/three.min.js"></script>
+    <script src="../Scripts/Tools/three.js/js/controls/OrbitControls.js"></script>
+    <script src="../Scripts/Tools/three.js/js/exporters/STLExporter.js"></script>
+    <script src="../Scripts/Tools/three.js/js/libs/stats.min.js"></script>
+    <script src="../Scripts/Tools/three.js/js/loaders/ColladaLoader.js"></script>
+
+    <script src="../Scripts/View/sketchpad.js"></script>
+
+    <title></title>
+
+    <script>
+
+    var canvas;
+    var scale = 2.55;
+
+    $(document).ready(function () {
+
+        canvas = new sketchpad("canvas", "");
+        canvas.init(20, 0, 0, 0);
+        canvas.add_stats();
+
+        var data = get_data();
+
+        if(data.url != undefined)
+            canvas.add_model_by_url(data.url, 0xff5533);
+
+        $(document).bind('keydown', "shift+x", function () {
+            canvas.set_aixs("aixs_x");
+        });
+        $(document).bind('keydown', "shift+y", function () {
+            canvas.set_aixs("aixs_y");
+        });
+        $(document).bind('keydown', "shift+z", function () {
+            canvas.set_aixs("aixs_z");
+        });
+        $(document).bind('keydown', "shift+g", canvas.set_ground);
+
+    });
+
+    function get_data() {
+
+        var url = location.href;
+        var temp = url.split("?");
+        var data = temp[1].split("&");
+        var data_obj = {};
+
+        for (i in data) {
+
+            temp = data[i].split("=");
+            data_obj[temp[0]] = temp[1];
+        }
+
+        return data_obj;
+    }
+
+    </script>
+</head>
+<body>
+    <div id="canvas"></div>
+</body>
+</html>

@@ -1,0 +1,559 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <!-- CSS -->
+    <link href="../Content/Tools/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="../Content/Tools/prettify.css" rel="stylesheet" />
+    <link href="../Content/shapeGrammar_dougong.css" rel="stylesheet" />
+
+    <!-- Tool -->
+    <script src="../Scripts/Tools/JQuery/jquery-2.1.3.min.js"></script>
+    <script src="../Scripts/Tools/jquery.hotkeys.js"></script>
+    <script src="../Scripts/Tools/bootstrap/bootstrap.min.js"></script>
+    <script src="../Scripts/Tools/bootstrap-filestyle/bootstrap-filestyle.min.js"></script>
+    <script src="../Scripts/Tools/prettify.js"></script>
+    <script src="../Scripts/Tools/FileSaver/FileSaver.min.js"></script>
+
+    <!-- three.js -->
+    <script src="../Scripts/Tools/three.js/three.min.js"></script>
+    <script src="../Scripts/Tools/three.js/js/controls/OrbitControls.js"></script>
+    <script src="../Scripts/Tools/three.js/js/exporters/STLBinaryExporter.js"></script>
+    <script src="../Scripts/Tools/three.js/js/exporters/STLExporter.js"></script>
+    <script src="../Scripts/Tools/three.js/js/libs/stats.min.js"></script>
+    <script src="../Scripts/Tools/three.js/js/loaders/ColladaLoader.js"></script>
+
+    <!-- 我自己的內容 -->
+    <script src="../Scripts/Model/shape.js"></script>
+    <script src="../Scripts/Model/rule.js"></script>
+    <script src="../Scripts/Model/grammar.js"></script>
+    <script src="../Scripts/View/sketchpad.js"></script>
+    <script src="../Scripts/View/ui.js"></script>
+    <script src="../Scripts/command.js"></script>
+    <script src="../Scripts/controller.js"></script>
+
+    <title>Shape Grammar Tool for Dougong</title>
+
+    <script>
+
+        var shape_draw = false;  //僅支援單栱,重栱,四鋪作(未加昂)
+        var scale = 2.55;
+        var example_file = "./Grammar/Dougong_4.xml";
+
+        var shape_grammar_controller;
+
+        $(document).ready(function () {
+
+            var data = get_data();
+
+            if (data.example_file != undefined)
+                example_file = data.example_file;
+
+            shape_grammar_controller = new controller();
+        });
+
+        function get_data() {
+
+            var url = location.href;
+            var temp = url.split("?");
+            var data_obj = {};
+
+            if (temp[1] != undefined) {
+
+                var data = temp[1].split("&");
+                for (i in data) {
+
+                    temp = data[i].split("=");
+                    data_obj[temp[0]] = temp[1];
+                }
+            }
+
+            return data_obj;
+        }
+        
+    </script>
+
+</head>
+<body>
+
+    <!-- 上方工具列 -->   
+    <div class="navbar navbar-default toolbar" role="navigation">
+        <ul class="nav navbar-nav">
+
+            <!-- 檔案 -->
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    檔案
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#" onclick="shape_grammar_controller.load_XML()">載入XML</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#" data-toggle="modal" data-target="#save_stl_Modal">匯出成stl</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#" onclick="shape_grammar_controller.close()">退出</a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- 編輯 -->
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    編輯
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#" onclick="shape_grammar_controller.undo()">上一步</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="shape_grammar_controller.redo()">下一步</a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- 檢視 -->
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    檢視
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#" onclick="shape_grammar_controller.set_aixs('aixs_x')">X軸</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="shape_grammar_controller.set_aixs('aixs_y')">Y軸</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="shape_grammar_controller.set_aixs('aixs_z')">Z軸</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#" onclick="shape_grammar_controller.set_ground()">地板</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="shape_grammar_controller.set_ground_grid()">地板格線</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#" onclick="shape_grammar_controller.set_help_line()">材、栔水平線</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="shape_grammar_controller.set_help_plane()">材、栔水平面</a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- 幫助 -->
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    幫助
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#" data-toggle="modal" data-target="#hotkey_Modal">快捷鍵一覽</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#" data-toggle="modal" data-target="#about_Modal">關於</a>
+                    </li>
+                </ul>
+            </li>
+
+        </ul>
+    </div>
+
+    <!-- 主畫面 -->
+    <div class="editor row">
+
+        <!-- 主繪圖介面 -->
+        <div class="col-md-9" id="canvas">
+        </div>
+
+        <!-- 右方控制面板 -->
+        <div class="col-md-3">
+
+            <!-- 控制面板項目 -->
+            <ul id="toolTab" class="nav nav-tabs">
+                <li class="active">
+                    <a href="#tab_grammarTool" data-toggle="tab">
+                        Tool
+                    </a>
+                </li>
+                <li>
+                    <a href="#tab_productList" data-toggle="tab">
+                        Product
+                    </a>
+                </li>
+                <li>
+                    <a href="#tab_shapeList" data-toggle="tab">
+                        Shape
+                    </a>
+                </li>
+                <li>
+                    <a href="#tab_ruleList" data-toggle="tab">
+                        Rule
+                    </a>
+                </li>
+                <li>
+                    <a href="#tab_xml" data-toggle="tab">
+                        XML
+                    </a>
+                </li>
+                <li>
+                    <a href="#tab_example" data-toggle="tab">
+                        Example
+                    </a>
+                </li>
+            </ul>
+
+            <!-- 控制面板內容 -->
+            <div id="toolTabContent" class="tab-content">
+
+                <!-- 主要提示分頁 -->
+                <div class="tab-pane fade in active" id="tab_grammarTool">
+
+                    <div id="grammar_chooser">
+                    </div>
+                    <hr>
+                    <div style="padding: 10px 5px 10px; text-align: center;">
+                        <textarea class="form-control" rows="3" id="grammar_string"></textarea>
+                        <br>
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-primary btn-lg" id="undo_btn" onclick="shape_grammar_controller.undo()">
+                                Undo
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-primary btn-lg" id="redo_btn" onclick="shape_grammar_controller.redo()">
+                                Redo
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 可能完成型分頁 -->
+                <div class="tab-pane fade item-list" id="tab_productList">
+                </div>
+
+                <!-- 形狀列表分頁 -->
+                <div class="tab-pane fade item-list" id="tab_shapeList">
+                </div>
+
+                <!-- 規則列表分頁 -->
+                <div class="tab-pane fade item-list" id="tab_ruleList">
+                </div>
+
+                <!-- XML分頁 -->
+                <div class="tab-pane fade" id="tab_xml">
+
+                    <div style="padding: 10px 5px 10px;">
+                        <input type="file" id="XML_file" class="filestyle" data-iconname="glyphicon-inbox" accept="text/*" onchange="shape_grammar_controller.get_XML(event)">
+                    </div>
+
+                    <div id="XML_viewer">
+                        <pre class="prettyprint lang-xml"></pre>
+                    </div>
+
+                </div>
+
+                <!-- 範例 -->
+                <div class="tab-pane fade item-list" id="tab_example">
+
+                    <br>
+                    <div class='item-pane' onclick="shape_grammar_controller.load_example('./Grammar/Dougong_1.xml')">
+                        <div class='information-pane'>
+                            <h4>單栱</h4>
+                        </div>
+                    </div>
+                    <br>
+                    <div class='item-pane' onclick="shape_grammar_controller.load_example('./Grammar/Dougong_2.xml')">
+                        <div class='information-pane'>
+                            <h4>重栱</h4>
+                        </div>
+                    </div>
+                    <br>
+                    <div class='item-pane' onclick="shape_grammar_controller.load_example('./Grammar/Dougong_0_05_3.xml')">
+                        <div class='information-pane'>
+                            <h4>枓口跳</h4>
+                        </div>
+                    </div>
+                    <br>
+                    <div class='item-pane' onclick="shape_grammar_controller.load_example('./Grammar/Dougong_0_05_4.xml')">
+                        <div class='information-pane'>
+                            <h4>把頭絞項造</h4>
+                        </div>
+                    </div>
+                    <br>
+                    <div class='item-pane' onclick="shape_grammar_controller.load_example('./Grammar/Dougong_4.xml')">
+                        <div class='information-pane'>
+                            <h4>四鋪作裡外並一抄卷頭 壁內用重栱</h4>
+                        </div>
+                    </div>
+                    <br>
+                    <div class='item-pane' onclick="shape_grammar_controller.load_example('./Grammar/Dougong_4on.xml')">
+                        <div class='information-pane'>
+                            <h4>四鋪作插昂補間鋪作</h4>
+                        </div>
+                    </div>
+                    <br>
+                    <div class='item-pane' onclick="shape_grammar_controller.load_example('./Grammar/Dougong_5_06_1.xml')">
+                        <div class='information-pane'>
+                            <h4>五鋪作重栱出單杪下昂 裏轉五鋪作重栱出兩杪 並計心</h4>
+                        </div>
+                    </div>
+                    <br>
+                    <div class='item-pane' onclick="shape_grammar_controller.load_example('./Grammar/Dougong_5_08_1.xml')">
+                        <div class='information-pane'>
+                            <h4>五鋪作出上昂並計心</h4>
+                        </div>
+                    </div>
+                    <br>
+                    <div class='item-pane' onclick="shape_grammar_controller.load_example('./Grammar/Dougong_6_06_2.xml')">
+                        <div class='information-pane'>
+                            <h4>六鋪作重栱出單杪雙下昂 裡轉五鋪作出兩杪 並計心</h4>
+                        </div>
+                    </div>
+                    <br>
+                    <div class='item-pane' onclick="shape_grammar_controller.load_example('./Grammar/Dougong_6_06_1.xml')">
+                        <div class='information-pane'>
+                            <h4>六鋪作重栱出上昂偷心跳內當中施騎枓栱</h4>
+                        </div>
+                    </div>
+                    <br>
+                    <div class='item-pane' onclick="shape_grammar_controller.load_example('./Grammar/Dougong_7_07_1.xml')">
+                        <div class='information-pane'>
+                            <h4>七鋪作重栱出雙杪 雙下昂 裏轉五鋪作 重栱出三杪 並計心</h4>
+                        </div>
+                    </div>
+                    <br>
+                    <div class='item-pane' onclick="shape_grammar_controller.load_example('./Grammar/Dougong_7_09_1.xml')">
+                        <div class='information-pane'>
+                            <h4>七鋪作重栱出上昂偷心跳內當中施騎枓栱</h4>
+                        </div>
+                    </div>
+                    <br>
+                    <div class='item-pane' onclick="shape_grammar_controller.load_example('./Grammar/Dougong_8_07_2.xml')">
+                        <div class='information-pane'>
+                            <h4>八鋪作重栱出雙杪 三下昂 裏轉六鋪作 重栱出三杪 並計心</h4>
+                        </div>
+                    </div>
+                    <br>
+                    <div class='item-pane' onclick="shape_grammar_controller.load_example('./Grammar/Dougong_8_09_2.xml')">
+                        <div class='information-pane'>
+                            <h4>八鋪作重栱出上昂偷心跳 內當中施騎枓栱</h4>
+                        </div>
+                    </div>
+                    <br>
+                    <div class='item-pane' onclick="shape_grammar_controller.load_example('./Grammar/Dougong_free.xml')">
+                        <div class='information-pane'>
+                            <h4>創意生成</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- 匯出成stl - 提示dialog -->
+    <div class="modal fade" id="save_stl_Modal" tabindex="-1" role="dialog" aria-labelledby="save_stl_ModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="save_stl_ModalLabel">
+                        匯出STL
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group input-group-lg">
+                        <input type="text" class="form-control" placeholder="Name" id="stl_name">
+                        <span class="input-group-addon">.stl</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="shape_grammar_controller.save_as_STL()">
+                        確定
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        取消
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>    
+    
+    <!-- 關於 - 快捷鍵ialog -->
+    <div class="modal fade" id="hotkey_Modal" tabindex="-1" role="dialog" aria-labelledby="hotkey_ModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="hotkey_ModalLabel">
+                        快捷鍵一覽
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                            <tr class="info">
+                                <th>快捷鍵</th>
+                                <th>功能</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="active">
+                                <td>Shift + L</td>
+                                <td>載入XML</td>
+                            </tr>
+                            <tr class="active">
+                                <td>Shift + S</td>
+                                <td>匯出成stl</td>
+                            </tr>
+                            <tr class="active">
+                                <td>Shift + F4</td>
+                                <td>退出</td>
+                            </tr>
+                            <tr class="success">
+                                <td>Ctrl + Z</td>
+                                <td>上一步</td>
+                            </tr>
+                            <tr class="success">
+                                <td>Ctrl + Y</td>
+                                <td>下一步</td>
+                            </tr>
+                            <tr class="warning">
+                                <td>Shift + X</td>
+                                <td>顯示/隱藏 - X軸</td>
+                            </tr>
+                            <tr class="warning">
+                                <td>Shift + Y</td>
+                                <td>顯示/隱藏 - Y軸</td>
+                            </tr>
+                            <tr class="warning">
+                                <td>Shift + Z</td>
+                                <td>顯示/隱藏 - Z軸</td>
+                            </tr>
+                            <tr class="warning">
+                                <td>Shift + G</td>
+                                <td>顯示/隱藏 - 地板</td>
+                            </tr>
+                            <tr class="warning">
+                                <td>Shift + R</td>
+                                <td>顯示/隱藏 - 地板格線</td>
+                            </tr>
+                            <tr class="warning">
+                                <td>Shift + F1</td>
+                                <td>顯示/隱藏 - 材、栔水平線</td>
+                            </tr>
+                            <tr class="warning">
+                                <td>Shift + F2</td>
+                                <td>顯示/隱藏 - 材、栔水平面</td>
+                            </tr>
+                            <tr class="danger">
+                                <td>Alt + H</td>
+                                <td>快捷鍵一覽</td>
+                            </tr>
+                            <tr class="danger">
+                                <td>Alt + A</td>
+                                <td>關於</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        確定
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+
+    <!-- 關於 - 提示dialog -->
+    <div class="modal fade" id="about_Modal" tabindex="-1" role="dialog" aria-labelledby="about_ModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="about_ModalLabel">
+                        關於
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <h3>Shape Grammar Dougong System</h3>
+                    <p>2014-2015 NTUT 圖學實驗室</p>
+                    <hr>
+                    <h4>使用套件</h4>
+                    <ul>
+                        <li>
+                            <a href="https://jquery.com/" target="_blank">JQuery</a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/jeresig/jquery.hotkeys" target="_blank">jquery.hotkeys</a>
+                        </li>
+                        <li>
+                            <a href="http://getbootstrap.com/" target="_blank">Bootstrap</a>
+                        </li>
+                        <li>
+                            <a href="http://markusslima.github.io/bootstrap-filestyle/" target="_blank">Bootstrap-filestyle</a>
+                        </li>
+                        <li>
+                            <a href="http://threejs.org/" target="_blank">three.js</a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/eligrey/FileSaver.js/" target="_blank">FileSaver.js</a>
+                        </li>
+                        <li>
+                            <a href="https://code.google.com/p/google-code-prettify/" target="_blank">prettify.js</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        確定
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+
+    <!-- 完成dialog -->
+    <div class="modal fade" id="finish_Modal" tabindex="-1" role="dialog" aria-labelledby="finish_ModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="finish_ModalLabel">
+                        完成
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <h3>恭喜</h3>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        確定
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,487 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link href="./Content/Tools/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="./Content/main.css" rel="stylesheet" />
+
+    <script src="./Scripts/Tools/JQuery/jquery-2.1.3.min.js"></script>
+    <script src="./Scripts/Tools/bootstrap/bootstrap.min.js"></script>
+
+    <script>
+
+        function open_file(url) {
+
+            window.open(url, '_blank', 'width=900,height=600');
+        }
+
+    </script>
+
+    <title>Shape Grammar Tool for Dougong</title>
+</head>
+<body>
+    <div class="container">
+        <div id="title" class="jumbotron">
+            <h1>枓栱生成系統</h1>
+            <p>營造法式枓栱形狀文法建構</p>
+            <p>
+                <a class="btn btn-primary btn-lg" role="button" href="./ShapeGrammar/ShapeGrammar.html">
+                    進入系統
+                </a>
+            </p>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="panel panel-default center main_pane">
+
+            <ul id="myTab" class="nav nav-tabs">
+                <li class="active">
+                    <a href="#home" data-toggle="tab">
+                        枓栱生成系統
+                    </a>
+                </li>
+                <li><a href="#d1" data-toggle="tab">單栱</a></li>
+                <li><a href="#d2" data-toggle="tab">重栱</a></li>
+                <li><a href="#d0_1" data-toggle="tab">枓口跳</a></li>
+                <li><a href="#d0_2" data-toggle="tab">把頭絞項造</a></li>
+                <li class="dropdown">
+                    <a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown">
+                        四鋪作
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+                        <li><a href="#d4_1" tabindex="-1" data-toggle="tab">四鋪作插昂補間鋪作</a></li>
+                        <li><a href="#d4_2" tabindex="-1" data-toggle="tab">四鋪作裡外並一抄卷頭 壁內用重栱</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown">
+                        五鋪作
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+                        <li><a href="#d5_1" tabindex="-1" data-toggle="tab">五鋪作重栱出單杪下昂 裏轉五鋪作重栱出兩杪 並計心</a></li>
+                        <li><a href="#d5_2" tabindex="-1" data-toggle="tab">五鋪作出上昂並計心</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown">
+                        六鋪作
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+                        <li><a href="#d6_1" tabindex="-1" data-toggle="tab">六鋪作重栱出單杪雙下昂 裡轉五鋪作出兩杪 並計心</a></li>
+                        <li><a href="#d6_2" tabindex="-1" data-toggle="tab">六鋪作重栱出上昂偷心跳內當中施騎枓栱</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown">
+                        七鋪作
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+                        <li><a href="#d7_1" tabindex="-1" data-toggle="tab">七鋪作重栱出雙杪 雙下昂 裏轉五鋪作 重栱出三杪 並計心</a></li>
+                        <li><a href="#d7_2" tabindex="-1" data-toggle="tab">七鋪作重栱出上昂偷心跳內當中施騎枓栱</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown">
+                        八鋪作
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+                        <li><a href="#d8_1" tabindex="-1" data-toggle="tab">八鋪作重栱出雙杪三下昂裏轉六鋪作重栱出三杪並計心</a></li>
+                        <li><a href="#d8_2" tabindex="-1" data-toggle="tab">八鋪作重栱出上昂偷心跳 內當中施騎枓栱</a></li>
+                    </ul>
+                </li>
+                <li><a href="#d_free" data-toggle="tab">創意生成</a></li>
+            </ul>
+
+            <div id="myTabContent" class="tab-content">
+
+                <div class="tab-pane fade in active" id="home">
+                    <div class="center sub_pane">
+                        <div class="page-header">
+                            <h2>枓栱生成系統</h2>
+                        </div>
+                        <p>枓栱生成系統以形狀文法為基礎。藉由讀取不同的文法XML設定檔，可以達到以下功能:</p>
+                        <ul>
+                            <li>快速生成各種不同的枓栱</li>
+                            <li>顯示各構件生成與組裝步驟</li>
+                            <li>達到介紹枓栱的教育目的，讓使用者理解枓栱的形態組構</li>
+                            <li>做成的枓栱可匯出成STL檔案，用於3D列印</li>
+                        </ul>
+                        <br>
+                        <p>參考論文:</p>
+                        <p>黃瑞菘，以形狀文法建構宋式枓栱系統，碩士論文，雲林科技大學空間設計系研究所，雲林，2002。</p>
+                        <a href="http://handle.ncl.edu.tw/11296/ndltd/69984989595502317583" target="_blank">文獻來源</a>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="d1">
+                    <div class="center sub_pane">
+                        <div class="page-header">
+                            <h2>單栱</h2>
+                        </div>
+                        <img class="center" height="400" src="./Image/05-1.gif" />
+                        <br>
+                        <div style="text-align:right;">
+                            <button type="button" class="btn btn-primary btn-lg" onclick = "open_file('./ShapeGrammar/Grammar/Dougong_1.xml')">
+                                下載設定檔
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./video.html?src=https://www.youtube.com/embed/XOalCfvNOCo')">
+                                觀看示範教學
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-primary btn-lg" role="button" href="./ShapeGrammar/ShapeGrammar.html?example_file=./Grammar/Dougong_1.xml">進入系統</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="d2">
+                    <div class=" center sub_pane">
+                        <div class="page-header">
+                            <h2>重栱</h2>
+                        </div>
+                        <img class="center" height="400" src="./Image/05-2.gif" />
+                        <br>
+                        <div style="text-align:right;">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./ShapeGrammar/Grammar/Dougong_2.xml')">
+                                下載設定檔
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./video.html?src=https://www.youtube.com/embed/hiOPXXKQb2o ')">
+                                觀看示範教學
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-primary btn-lg" role="button" href="./ShapeGrammar/ShapeGrammar.html?example_file=./Grammar/Dougong_2.xml">進入系統</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="d0_1">
+                    <div class=" center sub_pane">
+                        <div class="page-header">
+                            <h2>枓口跳</h2>
+                        </div>
+                        <img class="center" height="400" src="./Image/05-3.gif" />
+                        <br>
+                        <div style="text-align:right;">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./ShapeGrammar/Grammar/Dougong_0_05_3.xml')">
+                                下載設定檔
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./video.html?src=https://www.youtube.com/embed/ ')">
+                                觀看示範教學
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-primary btn-lg" role="button" href="./ShapeGrammar/ShapeGrammar.html?example_file=./Grammar/Dougong_0_05_3.xml">進入系統</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="d0_2">
+                    <div class=" center sub_pane">
+                        <div class="page-header">
+                            <h2>把頭絞項造</h2>
+                        </div>
+                        <img class="center" height="400" src="./Image/05-4.gif" />
+                        <br>
+                        <div style="text-align:right;">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./ShapeGrammar/Grammar/Dougong_0_05_4.xml')">
+                                下載設定檔
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./video.html?src=https://www.youtube.com/embed/ ')">
+                                觀看示範教學
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-primary btn-lg" role="button" href="./ShapeGrammar/ShapeGrammar.html?example_file=./Grammar/Dougong_0_05_4.xml">進入系統</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="d4_1">
+                    <div class=" center sub_pane">
+                        <div class="page-header">
+                            <h2>
+                                四鋪作
+                                <small>插昂補間鋪作</small>
+                            </h2>
+                        </div>
+                        <img class="center" height="400" src="./Image/05-5.gif" />
+                        <br>
+                        <div style="text-align:right;">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./ShapeGrammar/Grammar/Dougong_4.xml')">
+                                下載設定檔
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./video.html?src=https://www.youtube.com/embed/Eo7oclXt0gw ')">
+                                觀看示範教學
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-primary btn-lg" role="button" href="./ShapeGrammar/ShapeGrammar.html?example_file=./Grammar/Dougong_4.xml">進入系統</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="d4_2">
+                    <div class=" center sub_pane">
+                        <div class="page-header">
+                            <h2>
+                                四鋪作
+                                <small>裡外並一抄卷頭 壁內用重栱</small>
+                            </h2>
+                        </div>
+                        <img class="center" height="400" src="./Image/05-6.gif" />
+                        <br>
+                        <div style="text-align:right;">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./ShapeGrammar/Grammar/Dougong_4on.xml')">
+                                下載設定檔
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./video.html?src=https://www.youtube.com/embed/baGmV2c_KiI ')">
+                                觀看示範教學
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-primary btn-lg" role="button" href="./ShapeGrammar/ShapeGrammar.html?example_file=./Grammar/Dougong_4on.xml">進入系統</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="d5_1">
+                    <div class=" center sub_pane">
+                        <div class="page-header">
+                            <h2>
+                                五鋪作
+                                <small>重栱出單杪下昂 裏轉五鋪作重栱出兩杪 並計心</small>
+                            </h2>
+                        </div>
+                        <img class="center" height="400" src="./Image/06-1.gif" />
+                        <br>
+                        <div style="text-align:right;">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./ShapeGrammar/Grammar/Dougong_5_06_1.xml')">
+                                下載設定檔
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./video.html?src=https://www.youtube.com/embed/ZhOA2hWiPh0 ')">
+                                觀看示範教學
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-primary btn-lg" role="button" href="./ShapeGrammar/ShapeGrammar.html?example_file=./Grammar/Dougong_5_06_1.xml">進入系統</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="d5_2">
+                    <div class=" center sub_pane">
+                        <div class="page-header">
+                            <h2>
+                                五鋪作
+                                <small>出上昂並計心</small>
+                            </h2>
+                        </div>
+                        <img class="center" height="400" src="./Image/08-1.gif" />
+                        <br>
+                        <div style="text-align:right;">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./ShapeGrammar/Grammar/Dougong_5_08_1.xml')">
+                                下載設定檔
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./video.html?src=https://www.youtube.com/embed/ ')">
+                                觀看示範教學
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-primary btn-lg" role="button" href="./ShapeGrammar/ShapeGrammar.html?example_file=./Grammar/Dougong_5_08_1.xml">進入系統</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="d6_1">
+                    <div class=" center sub_pane">
+                        <div class="page-header">
+                            <h2>
+                                六鋪作
+                                <small>重栱出單杪雙下昂 裡轉五鋪作出兩杪 並計心</small>
+                            </h2>
+                        </div>
+                        <img class="center" height="400" src="./Image/06-2.gif" />
+                        <br>
+                        <div style="text-align:right;">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./ShapeGrammar/Grammar/Dougong_6_06_2.xml')">
+                                下載設定檔
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./video.html?src=https://www.youtube.com/embed/xDicKuM3AlY ')">
+                                觀看示範教學
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-primary btn-lg" role="button" href="./ShapeGrammar/ShapeGrammar.html?example_file=./Grammar/Dougong_6_06_2.xml">進入系統</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="d6_2">
+                    <div class=" center sub_pane">
+                        <div class="page-header">
+                            <h2>
+                                六鋪作
+                                <small>重栱出上昂偷心跳內當中施騎枓栱</small>
+                            </h2>
+                        </div>
+                        <img class="center" height="400" src="./Image/08-2.gif" />
+                        <br>
+                        <div style="text-align:right;">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./ShapeGrammar/Grammar/Dougong_6_06_1.xml')">
+                                下載設定檔
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./video.html?src=https://www.youtube.com/embed/00G_mqNeK0g ')">
+                                觀看示範教學
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-primary btn-lg" role="button" href="./ShapeGrammar/ShapeGrammar.html?example_file=./Grammar/Dougong_6_06_1.xml">進入系統</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="d7_1">
+                    <div class=" center sub_pane">
+                        <div class="page-header">
+                            <h2>
+                                七鋪作
+                                <small>重栱出雙杪 雙下昂 裏轉五鋪作 重栱出三杪 並計心</small>
+                            </h2>
+                        </div>
+                        <img class="center" height="400" src="./Image/07-1.gif" />
+                        <br>
+                        <div style="text-align:right;">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./ShapeGrammar/Grammar/Dougong_7_07_1.xml')">
+                                下載設定檔
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./video.html?src=https://www.youtube.com/embed/xUCWU2y1Ypc ')">
+                                觀看示範教學
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-primary btn-lg" role="button" href="./ShapeGrammar/ShapeGrammar.html?example_file=./Grammar/Dougong_7_07_1.xml">進入系統</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="d7_2">
+                    <div class=" center sub_pane">
+                        <div class="page-header">
+                            <h2>
+                                七鋪作
+                                <small>重栱出上昂偷心跳內當中施騎枓栱</small>
+                            </h2>
+                        </div>
+                        <img class="center" height="400" src="./Image/09-1.gif" />
+                        <br>
+                        <div style="text-align:right;">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./ShapeGrammar/Grammar/Dougong_7_09_1.xml')">
+                                下載設定檔
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./video.html?src=https://www.youtube.com/embed/o-KZI4mNw0M ')">
+                                觀看示範教學
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-primary btn-lg" role="button" href="./ShapeGrammar/ShapeGrammar.html?example_file=./Grammar/Dougong_7_09_1.xml">進入系統</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="d8_1">
+                    <div class=" center sub_pane">
+                        <div class="page-header">
+                            <h2>
+                                八鋪作
+                                <small>重栱出雙杪三下昂裏轉六鋪作重栱出三杪並計心</small>
+                            </h2>
+                        </div>
+                        <img class="center" height="400" src="./Image/07-2.gif" />
+                        <br>
+                        <div style="text-align:right;">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./ShapeGrammar/Grammar/Dougong_8_07_2.xml')">
+                                下載設定檔
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./video.html?src=https://www.youtube.com/embed/rWWmf9nx-OU ')">
+                                觀看示範教學
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-primary btn-lg" role="button" href="./ShapeGrammar/ShapeGrammar.html?example_file=./Grammar/Dougong_8_07_2.xml">進入系統</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="d8_2">
+                    <div class=" center sub_pane">
+                        <div class="page-header">
+                            <h2>
+                                八鋪作
+                                <small>重栱出上昂偷心跳 內當中施騎枓栱</small>
+                            </h2>
+                        </div>
+                        <img class="center" height="400" src="./Image/09-2.gif" />
+                        <br>
+                        <div style="text-align:right;">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./ShapeGrammar/Grammar/Dougong_8_09_2.xml')">
+                                下載設定檔
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./video.html?src=https://www.youtube.com/embed/HzW3meQ_EUc ')">
+                                觀看示範教學
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-primary btn-lg" role="button" href="./ShapeGrammar/ShapeGrammar.html?example_file=./Grammar/Dougong_8_09_2.xml">進入系統</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="d_free">
+                    <div class=" center sub_pane">
+                        <div class="page-header">
+                            <h2>
+                                創意生成
+                                <small>混和單栱與重栱的規則</small>
+                            </h2>
+                        </div>
+                        <img class="center" height="400" src="./Image/free.gif" />
+                        <br>
+                        <div style="text-align:right;">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./ShapeGrammar/Grammar/Dougong_free.xml')">
+                                下載設定檔
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary btn-lg" onclick="open_file('./video.html?src=https://www.youtube.com/embed/sbWsPHPM-Dk ')">
+                                觀看示範教學
+                            </button>
+                            &nbsp;
+                            <a class="btn btn-primary btn-lg" role="button" href="./ShapeGrammar/ShapeGrammar.html?example_file=./Grammar/Dougong_free.xml">進入系統</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div class="center foot_pane">
+        <p class="copyright text-muted small">
+            <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="創用 CC 授權條款" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource" property="dct:title" rel="dct:type"></span><br>
+            營造法式枓栱形狀文法建構，由<a xmlns:cc="http://creativecommons.org/ns#" href="http://www.cc.ntut.edu.tw/~tjhsieh/" property="cc:attributionName" rel="cc:attributionURL">國立臺北科技大學資訊工程系計算機圖學實驗室</a>製作，
+            以<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">創用CC 姓名標示-非商業性-相同方式分享 4.0 國際 授權條款</a>釋出。
+            姓名標示-非商業性-相同方式分享 CC BY-NC-SA
+            本授權條款允許使用者對本著作進行重混、調整，以及依原著作建立新著作，但僅限於非商業目的之使用。唯使用者就其新創著作，必須按照表彰
+            原作：國立臺北科技大學資訊工程系計算機圖學實驗室，並且將產出之新創著作採用相同的授權條款釋出。
+        </p>
+    </div>
+
+</body>
+</html>

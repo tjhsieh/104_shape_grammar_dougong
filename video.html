@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    
+    <link href="./Content/main.css" rel="stylesheet" />
+
+    <script src="./Scripts/Tools/JQuery/jquery-2.1.3.min.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+
+            var data = get_data();
+
+            //$("#videio_tag > source").attr("src", data.src);
+            //$("#videio_tag").load();
+            $("iframe").attr("src", data.src);
+        });
+
+        function get_data() {
+
+            var url = location.href;
+            var temp = url.split("?");
+            var data_obj = {};
+
+            if (temp[1] != undefined) {
+
+                var data = temp[1].split("&");
+                for (i in data) {
+
+                    temp = data[i].split("=");
+                    data_obj[temp[0]] = temp[1];
+                }
+            }
+
+            return data_obj;
+        }
+
+    </script>
+
+    <title></title>
+</head>
+<body>
+    <br>
+    <!--<video id="videio_tag" class="center" width="800" controls="controls">
+        <source src="" type="video/mp4" />
+    </video>-->
+    <iframe class="center" width="800" height="450" src="" frameborder="0" allowfullscreen></iframe>
+</body>
+</html>
