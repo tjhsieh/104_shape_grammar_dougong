@@ -1,0 +1,27 @@
+﻿body {
+    overflow-x: hidden;
+}
+
+#title {
+    background-image: url('../Image/2015-0826-1300-19.gif');
+}
+
+.center {
+    display: table;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.main_pane {
+    width: 1300px;
+    min-height: 700px;
+    font-size: 120%;
+}
+
+.sub_pane {
+    width: 80%;
+}
+
+.foot_pane {
+    width: 1000px;
+}
